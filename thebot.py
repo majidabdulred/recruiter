@@ -300,7 +300,7 @@ async def devmode(message):
             await logsch.send(recruits)
 
 
-token = S3Connection(os.environ['token'])
+token = os.environ['token']
 
 
 client.run(token)
