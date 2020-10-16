@@ -26,7 +26,6 @@ Steps:
 """
 
 import discord
-from boto.s3.connection import S3Connection
 import os
 intent = discord.Intents.default()
 intent.members = True
