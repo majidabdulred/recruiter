@@ -38,8 +38,11 @@ data = {}
 thecategory = 0
 hrs = []
 
-theguildid = "632799582350475265"
-roles_for_hr = ["HR","one","two"]
+#theguildid = "632799582350475265" # Bot test server
+theguildid = "745346902287188138" # True Grit
+
+
+roles_for_hr = ["CEO","High Command","Corp Affairs Officer","HR"]
 
 the_welcome_message="""Welcome! Just to go over a few things about GRIT.
 
@@ -117,7 +120,8 @@ async def on_member_join(member):
     global data
     global recruits
     print("member joined")
-
+    if member.guild.id != theguildid:
+        return
     overwrites = {
         member: discord.PermissionOverwrite(read_messages=True),
         theguild.default_role: discord.PermissionOverwrite(read_messages=False)} # Permission rules for the channel that will be created
@@ -140,14 +144,20 @@ async def on_message(message):
     global data
     global recruits
     theuser = str(message.author)
+
+
     if message.author.bot or message.author.id == 757099374261305385: # Not a bot
         return
-    print(str(message.author.name), " said :", message.content)
 
     if message.channel.id == 763674672105259008 and "!log" in message.content: # If its a message in log_recruits channels
         print("Devmode", message.content)
         await devmode(message)
         return
+
+    if message.channel.category_id not in (766879237759827969,745346902287188140) :
+        return
+
+    print(str(message.author.name), " said :", message.content)
 
     if message.author.id in recruits:
         await logsch.send("{} : {}".format(message.author.name, message.content))
@@ -159,7 +169,7 @@ async def on_message(message):
             await add_screenshot(message, theuser)
         elif data[theuser]["steps"] == 4:
             await add_comment(message, theuser)
-    elif message.channel.category_id == 766573367972855809 and message.author.id in hrs:
+    elif message.channel.category_id == 766879237759827969 and message.author.id in hrs:
         if message.content == "!accept" :
             await message.channel.send(the_accpet_letter)
         elif message.content == "!close":
@@ -173,8 +183,7 @@ async def on_raw_reaction_add(payload):
     theuser = client.get_user(payload.user_id)
     if theuser.bot or payload.user_id == 757099374261305385 or payload.channel_id == 763674672105259008:
         return
-    if payload.message_id == 766283456098336768: # Used at the time of testing so user dont have to leave and join again and again
-        await on_member_join(payload.member)
+
     await logsch.send("{} reacted with {}".format(theuser.name, payload.emoji))
     print(theuser, recruits)
     if theuser.id in recruits:
