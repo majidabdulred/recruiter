@@ -247,8 +247,7 @@ async def add_playstyle(message, theuser):
         data[theuser]["playstyle"] = message.content[2:]
         data[theuser]["steps"] = 3
         await message.channel.send(embed=discord.Embed(
-            description="Thanks.\nNow please send your in-game profile screenshot'''\nLike this.(or send anything "
-                        "because this is Testing) ").set_image(
+            description="Thanks.\nNow please send your in-game profile screenshot'''\nLike this.").set_image(
             url="https://cdn.discordapp.com/attachments/745295219175456888/761944550825918495/IMG-20201003-WA0036.jpg"))
         await logsch.send("[+]Added playstyle : {} : {}".format(theuser, message.content.lstrip("!t")))
 
