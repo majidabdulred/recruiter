@@ -116,6 +116,7 @@ async def on_ready():
                 break
         except:
             continue
+            
     print("Ready")
 
 @client.event
@@ -162,7 +163,7 @@ async def on_message(message):
         await devmode(message)
         return
 
-    if message.channel.category_id not in (766897112632918036,745346902287188140) :
+    if message.channel.category_id not in (766897112632918036,thecategory.id) :
         return
 
     print(str(message.author.name), " said :", message.content)
@@ -177,11 +178,18 @@ async def on_message(message):
             await add_screenshot(message, theuser)
         elif data[theuser]["steps"] == 4:
             await add_comment(message, theuser)
-    elif message.channel.category_id == 766897112632918036 and message.author.id in hrs:
+    elif message.channel.category_id == thecategory.id and message.author.id in hrs:
         if message.content == "!accept" :
             await message.channel.send(the_accpet_letter)
         elif message.content == "!close":
             await message.channel.delete(reason="Interview ended")
+    elif message.channel.category_id == 766897112632918036 and message.author.id in hrs:
+        if "!start" in message.content :
+            try:
+                for i in message.mentions:
+                    await on_member_join(i)
+            except:
+                pass
 
 
 @client.event
