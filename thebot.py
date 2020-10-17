@@ -37,7 +37,7 @@ recruits = []
 data = {}
 thecategory = 0
 hrs = []
-
+the_HR_role = 0
 #theguildid = "632799582350475265" # Bot test server
 theguildid = "745346902287188138" # True Grit
 
@@ -94,7 +94,8 @@ Then react with "2" and say "requesting access"""
 
 @client.event
 async def on_ready():
-    global theredman, theguild, logsch , thecategory,hrs
+
+    global the_HR_role,theredman, theguild, logsch , thecategory,hrs
 
     theguild = client.get_guild(int(theguildid)) # The Server
     logsch = client.get_guild(632799582350475265).get_channel(763674672105259008) #log channel in Bot test server for sending logs
@@ -106,13 +107,15 @@ async def on_ready():
             for j in i.members:
                 hrs.append(j.id)
     print(hrs)
+    the_HR_role = theguild.get_role(764360399977971722)
     for i in theguild.by_category():
         try:
             if i[0].name == "Recruits":
                 thecategory = i[0] # The Recruits category (I didnt found any function like theguild.get_category(id))
+                print("The category =",thecategory)
                 break
         except:
-            pass
+            continue
     print("Ready")
 
 @client.event
@@ -120,13 +123,18 @@ async def on_member_join(member):
     global data
     global recruits
     print("member joined")
-    if member.guild.id != theguildid:
-        return
-    overwrites = {
-        member: discord.PermissionOverwrite(read_messages=True),
-        theguild.default_role: discord.PermissionOverwrite(read_messages=False)} # Permission rules for the channel that will be created
+    perm = discord.PermissionOverwrite(attach_files=True,embed_links=True ,read_message_history=True,read_messages=True,send_messages=True,add_reactions=True,manage_channels=True,manage_permissions=True)
+    overwrites ={
+        member: discord.PermissionOverwrite(attach_files=True,embed_links=True ,read_message_history=True,read_messages=True,send_messages=True,add_reactions=True,),
+        theguild.default_role: discord.PermissionOverwrite(read_messages=False),
+        theguild.me: perm,
+        the_HR_role: perm} # Permission rules for the channel that will be created
 
-    mem_ch = await theguild.create_text_channel(member.name,category=thecategory, overwrites=overwrites) # Creating a new channel for all purposes
+    try:
+        mem_ch = await theguild.create_text_channel(member.name,category=thecategory, overwrites=overwrites) # Creating a new channel for all purposes
+    except Exception as E:
+        print(E)
+    print("A channel created")
     mem_mes = await mem_ch.send(f"{member.mention}",embed=discord.Embed(
         description="Welcome!, Hello looking to join?"))
     thename = str(member)
@@ -154,7 +162,7 @@ async def on_message(message):
         await devmode(message)
         return
 
-    if message.channel.category_id not in (766879237759827969,745346902287188140) :
+    if message.channel.category_id not in (766897112632918036,745346902287188140) :
         return
 
     print(str(message.author.name), " said :", message.content)
@@ -169,7 +177,7 @@ async def on_message(message):
             await add_screenshot(message, theuser)
         elif data[theuser]["steps"] == 4:
             await add_comment(message, theuser)
-    elif message.channel.category_id == 766879237759827969 and message.author.id in hrs:
+    elif message.channel.category_id == 766897112632918036 and message.author.id in hrs:
         if message.content == "!accept" :
             await message.channel.send(the_accpet_letter)
         elif message.content == "!close":
@@ -208,7 +216,7 @@ async def on_intro(thechannel):
         embed=discord.Embed(
             description="Hey I will just do your verification process then an HR will contact you. If you want to ask any questions or anything like that,  everything after the verification\nSo please co-ordinate with me."
                         "Please send your username in the format:.\n!u <username>\nExamples:\n!u "
-                            "majidadublred\n!u thename"))
+                            "majidabdulred\n!u thename"))
     await logsch.send("Send welcome message to {}".format(thechannel.name))
 
 
@@ -220,9 +228,9 @@ async def add_username(message, theuser):
         data[theuser]["steps"] = 2
         await message.channel.send(
             embed=discord.Embed(
-                description="Thanks.\nNow please send your playstyle in format\n!p pve,pvp,miner,industry,"
+                description="Thanks.\nNow please send your playstyle in format\n!t pve,pvp,miner,industry,"
                             "hauler\nExamples:\n"
-                            "!p miner,pve\n!p pvp,industry\n!p pve,hauler"))
+                            "!t miner,pve\n!t pvp,industry\n!t pve,hauler"))
         await logsch.send("[+]Added username : {} : {}".format(theuser, message.content.lstrip("!u")))
     else:
         await message.channel.send(
@@ -235,20 +243,20 @@ async def add_username(message, theuser):
 @client.event
 async def add_playstyle(message, theuser):
     global data
-    if "!p" in message.content or "!P" in message.content:
+    if "!t" in message.content or "!T" in message.content:
         data[theuser]["playstyle"] = message.content[2:]
         data[theuser]["steps"] = 3
         await message.channel.send(embed=discord.Embed(
             description="Thanks.\nNow please send your in-game profile screenshot'''\nLike this.(or send anything "
                         "because this is Testing) ").set_image(
             url="https://cdn.discordapp.com/attachments/745295219175456888/761944550825918495/IMG-20201003-WA0036.jpg"))
-        await logsch.send("[+]Added playstyle : {} : {}".format(theuser, message.content.lstrip("!p")))
+        await logsch.send("[+]Added playstyle : {} : {}".format(theuser, message.content.lstrip("!t")))
 
     else:
         await message.channel.send(
             embed=discord.Embed(
-                description=" Please write playstyle in correct format.\n!p pve,pvp,miner,industry,hauler\nExamples:\n"
-                            "!p miner,pve\n!p pvp,industry\n!p pve,hauler"))
+                description=" Please write playstyle in correct format.\n!t pve,pvp,miner,industry,hauler\nExamples:\n"
+                            "!t miner,pve\n!t pvp,industry\n!t pve,hauler"))
         await logsch.send("[-]Wrong playstyle format send the retry message to {}".format(theuser))
 
 
@@ -295,7 +303,7 @@ async def send_report(message, theuser):
                      url="https://cdn.discordapp.com/attachments/745295219175456888/760487391151652884/PicsArt_09-29-09.59.35.png")
     await message.channel.send(embed=embed)
     await message.channel.send("Thanks Now wait till an HR comes and contacts you.")
-
+    del data[theuser]
 
 
 @client.event
@@ -309,6 +317,5 @@ async def devmode(message):
 
 
 token = os.environ['token']
-
 
 client.run(token)
