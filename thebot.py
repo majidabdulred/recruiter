@@ -110,7 +110,7 @@ async def on_ready():
     the_HR_role = theguild.get_role(764360399977971722)
     for i in theguild.by_category():
         try:
-            if i[0].name == "Recruits":
+            if i[0].id == 767228054434611201:
                 thecategory = i[0] # The Recruits category (I didnt found any function like theguild.get_category(id))
                 print("The category =",thecategory)
                 break
@@ -181,7 +181,7 @@ async def on_message(message):
     elif message.channel.category_id == thecategory.id and message.author.id in hrs:
         if message.content == "!accept" :
             await message.channel.send(the_accpet_letter)
-        elif message.content == "!close":
+        elif message.content == "!close" and message.channel.id not in (767235327961071627,745506583219273810,758785868663619615,745349097652748310):
             await message.channel.delete(reason="Interview ended")
     elif message.channel.category_id == 766897112632918036 and message.author.id in hrs:
         if "!start" in message.content :
@@ -199,6 +199,7 @@ async def on_raw_reaction_add(payload):
     theuser = client.get_user(payload.user_id)
     if theuser.bot or payload.user_id == 757099374261305385 or payload.channel_id == 763674672105259008:
         return
+
 
     await logsch.send("{} reacted with {}".format(theuser.name, payload.emoji))
     print(theuser, recruits)
@@ -323,6 +324,6 @@ async def devmode(message):
             await logsch.send(recruits)
 
 
-token = os.environ['token']
-
+# token = os.environ['token']
+token = "NzU3MDk5Mzc0MjYxMzA1Mzg1.X2bdvQ.EArfaBeNofX8zq80at-aUDqO9Y0"
 client.run(token)
