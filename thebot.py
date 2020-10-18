@@ -324,6 +324,5 @@ async def devmode(message):
             await logsch.send(recruits)
 
 
-# token = os.environ['token']
-token = "NzU3MDk5Mzc0MjYxMzA1Mzg1.X2bdvQ.EArfaBeNofX8zq80at-aUDqO9Y0"
+token = os.environ['token']
 client.run(token)
